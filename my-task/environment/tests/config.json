@@ -1,5 +1,5 @@
 {
-  "base_commit": "3c305a37b8f7fefc2f387d3f2f477aabe26694b0",
+  "base_commit": "a2d4fada6c887dcda22fe4a8e14177f557bb1d1e",
   "test_paths": [
     "tests/test_validate_default_factory.py"
   ],

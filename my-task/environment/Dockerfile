@@ -29,25 +29,28 @@ RUN pip install --no-cache-dir maturin==1.7.4
 ENV CARGO_BUILD_JOBS=1
 ENV RUSTFLAGS="-C codegen-units=1 -C debuginfo=0"
 
-WORKDIR /app/pydantic-assessment
-COPY . /app/pydantic-assessment
+# Create staging area for task files
+RUN mkdir -p /tmp/task-files
 
-# Initialize git history at the workdir. Idempotent so the same Dockerfile
-# works in two contexts:
-#   - silver-k8s-api kaniko build (`.git/` is stripped from the build context
-#     by workers/silver-k8s-api/build.py, so we initialize fresh).
-#   - candidate local `docker build .` (`.git/` ships in the assessment .zip
-#     pointing at pydantic.git, so we keep the existing repo).
-#
-# Fetches ALL branches and tags from upstream so per-task
-# `git reset --hard <base_commit>` works for any commit a candidate picks
-# from the silver repoGitHistories doc, including commits on release
-# branches like v2.13-fixes that aren't reachable from main.
-RUN { [ -d .git ] || git init . ; } \
- && { git remote get-url origin >/dev/null 2>&1 || git remote add origin https://github.com/pydantic/pydantic.git ; } \
- && git remote set-url origin https://github.com/pydantic/pydantic.git \
- && git fetch origin '+refs/heads/*:refs/remotes/origin/*' '+refs/tags/*:refs/tags/*' \
- && git reset --soft refs/remotes/origin/main
+# Copy task files (tests, etc.) to staging area
+COPY . /tmp/task-files/
+
+# Clone pydantic repo and checkout base commit
+# Use --no-cache-dir to ensure fresh clone and verify files exist
+RUN rm -rf /app/pydantic-assessment && \
+    git clone https://github.com/pydantic/pydantic.git /app/pydantic-assessment && \
+    cd /app/pydantic-assessment && \
+    git checkout 3c305a37b8f7fefc2f387d3f2f477aabe26694b0 && \
+    ls -la && \
+    test -f pyproject.toml || (echo "pyproject.toml not found!" && exit 1)
+
+# Copy task test files into pydantic tests directory
+RUN ls -la /app/pydantic-assessment/ && \
+    cp /tmp/task-files/tests/* /app/pydantic-assessment/tests/ 2>/dev/null || true && \
+    rm -rf /tmp/task-files && \
+    ls -la /app/pydantic-assessment/
+
+WORKDIR /app/pydantic-assessment
 
 # Sync Python deps (prebuilt wheels by default; toolchain is on the path
 # for tasks that opt to build pydantic-core from source).

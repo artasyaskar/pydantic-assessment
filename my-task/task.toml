@@ -1,8 +1,8 @@
 [task]
-name = "validate_default_with_factory_fix"
+name = "artasyaskar/validate-default-factory-fix"
 description = "Fix validate_default behavior with default_factory taking validated data"
 repository = "pydantic"
-type = "bug_fix"
+type = "swe-bench"
 
 [requirements]
 python = ">=3.9"
