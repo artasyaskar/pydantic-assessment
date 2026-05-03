@@ -1,0 +1,13 @@
+[task]
+name = "validate_default_with_factory_fix"
+description = "Fix validate_default behavior with default_factory taking validated data"
+repository = "pydantic"
+type = "bug_fix"
+
+[requirements]
+python = ">=3.9"
+dependencies = ["pydantic", "pydantic-core"]
+
+[evaluation]
+test_framework = "pytest"
+test_path = "tests/"

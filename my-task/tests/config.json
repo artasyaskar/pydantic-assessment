@@ -1,0 +1,17 @@
+{
+  "base_commit": "a2d4fada6c887dcda22fe4a8e14177f557bb1d1e",
+  "test_paths": [
+    "tests/test_validate_default_factory.py"
+  ],
+  "fail_to_pass": [
+    "tests/test_validate_default_factory.py::test_validate_default_with_factory_taking_data",
+    "tests/test_validate_default_factory.py::test_validate_default_with_factory_producing_invalid_value",
+    "tests/test_validate_default_factory.py::test_validate_default_with_factory_taking_data_nested"
+  ],
+  "pass_to_pass": [
+    "tests/test_validate_default_factory.py::test_validate_default_without_factory",
+    "tests/test_validate_default_factory.py::test_factory_without_validate_default",
+    "tests/test_validate_default_factory.py::test_factory_not_taking_data_with_validate_default"
+  ],
+  "repo_name": "pydantic"
+}
